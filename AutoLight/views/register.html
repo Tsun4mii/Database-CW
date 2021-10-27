@@ -26,6 +26,9 @@
         </fieldset>
     </form>
     <button onclick="Get()">GET USERS</button>
+    <form action="/api/backup" method="post">
+        <button type="submit">BACKUP DB</button>
+    </form>
     <div id="result"></div>
 </body>
 <script>
@@ -41,5 +44,6 @@
             })
         })
     } 
+
  </script>
 </html>

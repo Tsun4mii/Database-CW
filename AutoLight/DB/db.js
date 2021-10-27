@@ -16,6 +16,28 @@ class DB {
         }).catch(err => console.log('Connection failed: ', err));
     }
 
+    async backupDb()
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().execute('backupDB');
+        })
+    }
+
+    async restoreDb(){
+        sql.connect(config).then(pool => {
+            return pool.request().execute('restoreDB');
+        })
+    }
+
+    selectAllUsers2(req, res)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().query('EXEC selAllUsers',(err, data)=>{
+                res.send(data.recordset);
+            })
+        })
+    }
+
     async regUser(login, password, email, firstName, secondName, sex, age, userType)
     {
         let encPass = await argon.hash(password);
@@ -40,6 +62,21 @@ class DB {
                 res.send(data.recordset);
             });
         });
+    }
+
+    execNoParams(procName)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().query(`exec ${procName}`);
+
+        })
+    }
+
+    execWithParams(procName, params)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().query(`exec ${procName} ${params}`);
+        })
     }
 }
 

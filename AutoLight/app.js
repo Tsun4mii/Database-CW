@@ -19,21 +19,43 @@ app.use(express.json());
 app.get('/reg', (req, res)=>{
     res.sendFile(__dirname + '/views/register.html');
 })
+
 app.post('/api/reg', (req, res)=>{
     console.log(req.body.login);
     DB.regUser(req.body.login, req.body.password, req.body.email, req.body.firstName, req.body.lastName, req.body.sex, req.body.age, req.body.userType);
 })
+
+app.post('/api/backup', (req, res)=>{
+    DB.backupDb();
+})
+
 app.post('/login', (req, res)=>{
     res.render('index.hbs')
+})
+app.get('/testdata', (req, res) => {
+    res.sendFile(__dirname + '/views/testdata.html');
 })
 app.get("/login",(req, res)=>
 {
     res.sendFile(__dirname + '/views/login.html');
 });
+
 app.get('/', (req, res)=>{
     res.end('hi');
 })
+
 app.post('/', (req, res)=>{
-    DB.selectAllUsers(req, res);
+    DB.selectAllUsers2(req, res);
+})
+
+app.post('/api/proc', (req, res)=>{
+    DB.execNoParams(req.body.procName);
+})
+
+app.post('/api/procwp', (req, res)=>{
+    
+})
+app.get('/api/OUsers',(req,res)=>{
+    DB.selectAllUsers2(req, res);
 })
 app.listen(5000);

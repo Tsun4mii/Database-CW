@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="TagTab(this)" id="OUsers">Get Users</button>
+    <div id="out_data">
+        
+    </div>
+<script>
+let Tab = '';
+let defTr;
+
+function TagTab(element)
+{
+    document.getElementById('out_data').innerHTML='';
+    defTr;
+    Tab = element.id;
+    switch(Tab)
+    {
+        case 'OUsers':
+            defTr = `<tr>
+            <td id="ULogin">Login</td>
+            <td id="UPass">Password</td>
+            <td id="UMail">Email</td>
+            <td id="UFirst">First Name</td>
+            <td id="ULast">Secong Name</td>
+            <td id="USex">Sex</td>
+            <td id="UAge">Age</td>
+            </tr>`
+    }
+    get_tab();
+}
+
+const fLink = 'http://localhost:5000/api';
+async function get_tab()
+{
+    let container = document.getElementById('out_data');
+    container.innerHTML='';
+    let load = document.createElement('div');
+    load.innerHTML = '<span> LOADING... </span>';
+    container.append(load, document.createElement('br'));
+
+    let LINK = `${fLink}/${Tab}`;
+
+    fetch(LINK).then(res => res.json()).then(res => 
+        {
+            let container = document.getElementById('out_data');
+            container.innerHTML = '';
+
+            let table = document.createElement('table');
+            table.setAttribute('border', 1);
+            table.innerHTML = defTr;
+
+            res.forEach(row => {
+                load.remove();
+                let pulp = document.createElement('tr');
+                switch(Tab)
+                {
+                    case 'OUsers':
+                        pulp.innerHTML = `<td>${row.login}</td><td>${row.password}</td><td>${row.email}</td><td>${row.firstName}</td><td>${row.secondName}</td><td>${row.sex}</td><td>${row.age}</td>`;
+                    break;
+                }
+                table.append(pulp);
+            })
+            container.append(table);
+        })
+}
+    </script>
+</body>
+</html>
