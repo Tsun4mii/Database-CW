@@ -30,7 +30,8 @@ app.post('/api/backup', (req, res)=>{
 })
 
 app.post('/login', (req, res)=>{
-    res.render('index.hbs')
+    console.log(req.body.login + ' ' + req.body.password);
+    DB.login(req, res, req.body.password, req.body.login);
 })
 app.get('/testdata', (req, res) => {
     res.sendFile(__dirname + '/views/testdata.html');
@@ -39,23 +40,14 @@ app.get("/login",(req, res)=>
 {
     res.sendFile(__dirname + '/views/login.html');
 });
-
 app.get('/', (req, res)=>{
     res.end('hi');
 })
-
 app.post('/', (req, res)=>{
     DB.selectAllUsers2(req, res);
 })
-
-app.post('/api/proc', (req, res)=>{
-    DB.execNoParams(req.body.procName);
-})
-
-app.post('/api/procwp', (req, res)=>{
-    
-})
-app.get('/api/OUsers',(req,res)=>{
-    DB.selectAllUsers2(req, res);
+app.get('/api/:proc',(req,res)=>{
+    let proc = req.params.proc;
+    DB.execNoParams(req, res, proc);
 })
 app.listen(5000);

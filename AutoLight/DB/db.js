@@ -55,6 +55,27 @@ class DB {
             console.log(err);
         })
     }
+    async login(req, res, password, login)
+    {
+        let recs;
+        console.log(login +' '+ password);
+        let hashPassword = await argon.hash(password);
+        console.log(hashPassword);
+        sql.connect(config).then(pool => {
+            return pool.request().input('login', sql.NVarChar, login)
+            .input('pass', sql.NVarChar, hashPassword)
+            .execute('LoginUser',(err, data)=>{
+                if(data.recordset[0] !== null)
+                {
+                    console.log(data.recordset[0]);
+                    res.redirect('http://localhost:5000/testdata');
+                }
+                else throw new Error('Wrong login or password');
+            });
+        }).catch(err => {
+            console.log(err);
+        })
+    }
     selectAllUsers(req, res)
     {
         sql.connect(config).then(pool => {
@@ -64,10 +85,12 @@ class DB {
         });
     }
 
-    execNoParams(procName)
+    execNoParams(req, res, procName)
     {
         sql.connect(config).then(pool => {
-            return pool.request().query(`exec ${procName}`);
+            return pool.request().query(`exec ${procName}`, (err, data)=> {
+                res.send(data.recordset);
+            });
 
         })
     }
