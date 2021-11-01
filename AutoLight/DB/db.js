@@ -1,5 +1,6 @@
 const sql = require('mssql/msnodesqlv8');
 const argon = require('argon2');
+const bcrypt = require('bcrypt');
 
 const config = {
     "driver":"msnodesqlv8",
@@ -40,7 +41,8 @@ class DB {
 
     async regUser(login, password, email, firstName, secondName, sex, age, userType)
     {
-        let encPass = await argon.hash(password);
+        let encPass = await bcrypt.hash(password, 10);
+        console.log(encPass);
         sql.connect(config).then(pool => {
             return pool.request().input('login', sql.NVarChar, login)
             .input('password', sql.NVarChar, encPass)
@@ -59,7 +61,7 @@ class DB {
     {
         let recs;
         console.log(login +' '+ password);
-        let hashPassword = await argon.hash(password);
+        let hashPassword = await bcrypt.hash(password, 10);
         console.log(hashPassword);
         sql.connect(config).then(pool => {
             return pool.request().input('login', sql.NVarChar, login)
@@ -67,11 +69,11 @@ class DB {
             .execute('LoginUser',(err, data)=>{
                 if(data.recordset[0] !== null)
                 {
-                    console.log(data.recordset[0]);
+                    console.log(data.recordset);
                     res.redirect('http://localhost:5000/testdata');
                 }
                 else throw new Error('Wrong login or password');
-            });
+            }); 
         }).catch(err => {
             console.log(err);
         })

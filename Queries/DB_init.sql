@@ -14,7 +14,7 @@ create table USER_TYPE(
 create table USERS(
 	id int identity(1,1) constraint USER_PK primary key,
 	login nvarchar(50) unique,
-	password nvarchar(20),
+	password nvarchar(200),
 	email nvarchar(30),
 	firstName nvarchar(50),
 	secondName nvarchar(50),
