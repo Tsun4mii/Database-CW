@@ -21,3 +21,10 @@ begin
 	select * from USERS where USERS.login = @login AND USERS.password = @pass;
 end;
 
+go 
+create procedure selOneUser @login nvarchar(50)
+as 
+begin
+	select * from USERS where USERS.login = @login;
+end;
+

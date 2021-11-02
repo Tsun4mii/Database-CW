@@ -19,6 +19,7 @@ function TagTab(element)
             <td id="UAge">Age</td>
             </tr>`
     }
+    get_tab();
 }
 
 const fLink = 'http://localhost:5000/api';

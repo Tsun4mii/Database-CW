@@ -1,5 +1,4 @@
 const sql = require('mssql/msnodesqlv8');
-const argon = require('argon2');
 const bcrypt = require('bcrypt');
 
 const config = {
@@ -59,20 +58,15 @@ class DB {
     }
     async login(req, res, password, login)
     {
-        let recs;
-        console.log(login +' '+ password);
-        let hashPassword = await bcrypt.hash(password, 10);
-        console.log(hashPassword);
         sql.connect(config).then(pool => {
             return pool.request().input('login', sql.NVarChar, login)
-            .input('pass', sql.NVarChar, hashPassword)
-            .execute('LoginUser',(err, data)=>{
-                if(data.recordset[0] !== null)
+            .execute('selOneUser',(err, data)=>{
+                if(bcrypt.compareSync(password, data.recordset[0].password))
                 {
                     console.log(data.recordset);
                     res.redirect('http://localhost:5000/testdata');
                 }
-                else throw new Error('Wrong login or password');
+                else res.send('Wrong login or password')
             }); 
         }).catch(err => {
             console.log(err);

@@ -3,7 +3,7 @@ use CW_DB
 go
 create procedure regUser
 				@login nvarchar(50),
-				@password nvarchar(20),
+				@password nvarchar(200),
 				@email nvarchar(30),
 				@firstName nvarchar(50),
 				@secondName nvarchar(50),
@@ -17,4 +17,6 @@ begin
 end;
 
 select * from USERS;
-delete from USERS where id = 2;
+delete from USERS where id = 3;
+
+drop procedure regUser;
