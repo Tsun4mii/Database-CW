@@ -4,7 +4,9 @@ const app = express();
 var path = require("path");
 var exphbs = require("express-handlebars");
 const Db = require('./DB/db')
+const mDb = require('./DB/masterDb');
 let DB = new Db();
+let mDB = new mDb();
 
 app.use(express.static("./"));
 app.use(express.static(path.join(__dirname, "public")));
@@ -26,7 +28,19 @@ app.post('/api/reg', (req, res)=>{
 })
 
 app.post('/api/backup', (req, res)=>{
-    DB.backupDb();
+    let filePath = '../Backups/CW_DB.bak';
+    if(fs.existsSync(filePath))
+    {
+        fs.unlinkSync(filePath);
+        DB.backupDb();
+    }
+    else
+    {
+        DB.backupDb();
+    }
+})
+app.post('/api/restore', (req, res)=>{
+    mDB.restoreDb(req, res);
 })
 
 app.post('/login', (req, res)=>{
@@ -51,3 +65,8 @@ app.get('/api/:proc',(req,res)=>{
     DB.execNoParams(req, res, proc);
 })
 app.listen(5000);
+
+//TODO: 1) Процедура, которая создает новую базу данных и восстанавливает ее со старого бэкапа
+// 2) JS функции для взаимодействия с этой процедурой 
+// 3) Процедуры вывода всех остальных данных
+// 4) JS функции для генераций таблиц для оставшихся данных 

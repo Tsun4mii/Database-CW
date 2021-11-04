@@ -23,6 +23,10 @@ create table USERS(
 	userType int constraint TYPE_USER_FK foreign key references USER_TYPE(id)
 )
 
+--drop table USER_TYPE;
+--drop table USERS;
+--insert into USER_TYPE(userType) values('Default'),('VIP')
+
 create table STORES(
 	id int identity(1,1) constraint STORE_PK primary key,
 	storeName nvarchar(50),
