@@ -28,3 +28,18 @@ begin
 	select * from USERS where USERS.login = @login;
 end;
 
+go
+create procedure OProdTypes
+as
+begin
+	select PRODUCT_TYPE.id, prodType, depart from PRODUCT_TYPE left join DEPARTMENTS on 
+	PRODUCT_TYPE.idDep = DEPARTMENTS.id;
+end;
+
+go
+create procedure OProducts
+as
+begin 
+	select PRODUCTS.prodCode, PRODUCTS.prodName, PRODUCTS.prodPrice, PRODUCTS.prodStock, PRODUCT_TYPE.prodType 
+from PRODUCTS join PRODUCT_TYPE on PRODUCTS.typeProdId = PRODUCT_TYPE.id;
+end;

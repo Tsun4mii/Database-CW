@@ -64,6 +64,9 @@ app.get('/api/:proc',(req,res)=>{
     let proc = req.params.proc;
     DB.execNoParams(req, res, proc);
 })
+app.get('/admin', (req, res)=>{
+    res.sendFile(__dirname + '/views/admin.html');
+})
 app.listen(5000);
 
 //TODO: 1) Процедура, которая создает новую базу данных и восстанавливает ее со старого бэкапа
