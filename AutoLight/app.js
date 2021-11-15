@@ -64,6 +64,15 @@ app.get('/api/:proc',(req,res)=>{
     let proc = req.params.proc;
     DB.execNoParams(req, res, proc);
 })
+app.post('/export/:type', (req, res) => {
+    let proc = req.params.type;
+    if(proc == 'ExProdToXml'){
+        DB.ExProdToXml(req, res)
+    }
+    else if(proc == 'ImProdFromXml'){
+        DB.ImProdFromXml(req, res);
+    }
+})
 app.get('/admin', (req, res)=>{
     res.sendFile(__dirname + '/views/admin.html');
 })

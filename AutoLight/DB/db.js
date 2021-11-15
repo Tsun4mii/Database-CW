@@ -97,6 +97,24 @@ class DB {
             return pool.request().query(`exec ${procName} ${params}`);
         })
     }
+
+    ExProdToXml(req, res)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().execute('ExProdToXml', (err, data) =>{
+                res.send(data.recordsets[0]);
+            })
+        })
+    }
+
+    ImProdFromXml(req, res)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().execute('ImProdfromXml', (err, data) =>{
+                res.send(data.recordsets[0]);
+            })
+        })
+    }
 }
 
 module.exports = DB
