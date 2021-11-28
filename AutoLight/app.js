@@ -39,6 +39,12 @@ app.post('/api/backup', (req, res)=>{
         DB.backupDb();
     }
 })
+app.post('/api/resireNewIn', (req,res) => 
+{
+    console.log(req.body.newDbName);
+    let name = "'"+req.body.newDbName + "'";
+    mDB.restoreNewInstance(name);
+})
 app.post('/api/restore', (req, res)=>{
     mDB.restoreDb(req, res);
 })
@@ -76,9 +82,39 @@ app.post('/export/:type', (req, res) => {
 app.get('/admin', (req, res)=>{
     res.sendFile(__dirname + '/views/admin.html');
 })
+
+app.post('/control/:fun/:exec', (req, res) => {
+    let param = '';
+    let json = req.body;
+    let Exec = req.params.exec + req.params.fun;
+    for(key in json)
+    {
+        param += ("'"+json[key]+"',");
+    }
+    param = param.slice(0, param.length-1);
+    console.log(param);
+    DB.execWithParams(Exec, param, res);
+})
+
+app.get('/api/:proc/:start/:end',(req,res)=>{
+    let proc = req.params.proc;
+    let params = '';
+    params += req.params.start + ', ' + req.params.end;
+    console.log(params);
+    DB.execWithParams(proc,params, res);
+})
+
 app.listen(5000);
 
-//TODO: 1) Процедура, которая создает новую базу данных и восстанавливает ее со старого бэкапа
-// 2) JS функции для взаимодействия с этой процедурой 
-// 3) Процедуры вывода всех остальных данных
-// 4) JS функции для генераций таблиц для оставшихся данных 
+//TODO: 
+/*
+1. Добавить поставщиков и связать с товарами + вывод в таблицу ---- DONE!
+2. Добавить вывод по страницам(20 элементов) ---- DONE! FIX: сделать для всех функций ----DONE
+3. Добавить функционал восстановления в новую бд 
+4. Доделать CRUD и формы для всех нужных сущностей
+5. Оформить страницу обычного юзера
+6. Добавить сессии и роутинг по сессии 
+7. Автоген 100000 строк для продуктов 
+8. Индексы
+9. ЕБУЧИЙ РЕФАКТОР
+*/

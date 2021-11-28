@@ -20,3 +20,27 @@ select * from USERS;
 delete from USERS where id = 3;
 
 drop procedure regUser;
+
+--add product
+go 
+create procedure OProductsAdd
+				@code nvarchar(12),
+				@name nvarchar(30),
+				@id int, 
+				@price numeric(8,2),
+				@stock int
+as 
+begin 
+	insert into PRODUCTS(prodCode, prodName, typeProdId, prodPrice, prodStock) 
+	values(@code, @name, @id, @price, @stock);
+end;
+
+--add store
+go 
+create procedure OStoresAdd
+				@name nvarchar(50),
+				@adress nvarchar(150)
+as
+begin
+	insert into STORES(storeName, adress) values(@name, @adress);
+end;

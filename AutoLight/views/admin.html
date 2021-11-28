@@ -6,22 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src=".\resourse\js\testdata.js"></script>
-    <script src=".\resourse\js\admin.js"></script>
     <link rel="stylesheet" href=".\resourse\css\index.css">
 </head>
 <body>
     <nav>
-        <button onclick="TagTab(this)" id="OUsers">Get Users</button>
-        <button onclick="TagTab(this)" id="OProdTypes">Get Product Types</button>
-        <button onclick="TagTab(this)" id="OProducts">Get Products</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OUsers">Get Users</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OProdTypes">Get Product Types</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OProducts">Get Products</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OPosts">Get Posts</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OStores">Get Stores</button>
+        <button class = "bn33" onclick="TagTab(this)" id="OSuppliers">Get Suppliers</button>
     </nav>
     <div id="out_data">
         
+    </div>
+    <div id="list_control_buttons" class="lcb">
+
+    </div>
+    <div id="db_control_panel" class="db_cp">
+    </div>
+    <div id="db_control">
+
     </div>
     <div>
         <form method="post" action="/export/ExProdToXml">
             <button type="submit">Export data to XML</button>
         </form>
+        <form method="post" action="/export/ImProdFromXml">
+            <button type="submit">Import data from XML</button>
+        </form>
+        <button onclick="RestoreToNewInstance()">Restore to new instance</button>
+    </div>
+    <div id="restore_new_in">
+
     </div>
 </body>
 </html>

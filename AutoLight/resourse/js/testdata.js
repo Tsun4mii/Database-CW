@@ -1,11 +1,15 @@
 let Tab = '';
 let defTr;
-
+let db_c;
+let db_cp;
+let start = 0, end = 20;
 function TagTab(element)
 {
     document.getElementById('out_data').innerHTML='';
     defTr;
     Tab = element.id;
+    start = 0;
+    end = 20;
     switch(Tab)
     {
         case 'OUsers':
@@ -35,22 +39,47 @@ function TagTab(element)
             <td id="ProdType">Type</td>
             </tr>`
             break;
+        case 'OPosts': 
+            defTr = `<tr>
+            <td id="PostId">Id</td>
+            <td id="PostName">Post</td>
+            </tr>`
+            break;
+        case 'OStores':
+            defTr=`<tr>
+            <td id="StoreId">Id</td>
+            <td id="StoreName">Name</td>
+            <td id="StoreAddress">Address</td>
+            </tr>`
+            break;
+        case 'OSuppliers':
+            defTr=`<tr>
+            <td id="SupID">Id</td>
+            <td id="SupName">Name</td>
+            <td id="SupAddr">Address</td>
+            </tr>`
+            break;
     }
     get_tab();
 }
 
+
 const fLink = 'http://localhost:5000/api';
 async function get_tab()
 {
+    db_cp = document.getElementById('db_control_panel');
+    db_cp.innerHTML = '';
+    db_c = document.getElementById('db_control');
+    db_c.innerHTML = '';
     let container = document.getElementById('out_data');
     container.innerHTML='';
     let load = document.createElement('div');
     load.innerHTML = '<span> LOADING... </span>';
     container.append(load, document.createElement('br'));
-
     let LINK = `${fLink}/${Tab}`;
+    let LINK2 = `${fLink}/${Tab}/${start}/${end}`
 
-    fetch(LINK).then(res => res.json()).then(res => 
+    fetch(LINK2).then(res => res.json()).then(res => 
         {
             let container = document.getElementById('out_data');
             container.innerHTML = '';
@@ -73,9 +102,140 @@ async function get_tab()
                     break;
                     case 'OProducts':
                         pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.prodStock}</td><td>${row.prodType}</td>`
+                    break;
+                    case 'OPosts':
+                        pulp.innerHTML = `<td>${row.id}</td><td>${row.post}</id>`
+                    break;
+                    case 'OStores':
+                        pulp.innerHTML = `<td>${row.id}</td><td>${row.storeName}</td><td>${row.adress}</td>`
+                    break;
+                    case 'OSuppliers':
+                        pulp.innerHTML = `<td>${row.id}</td><td>${row.supName}</td><td>${row.supAddress}</td>`
+                    break;
                 }
                 table.append(pulp);
             })
             container.append(table);
         })
+    DB_control_panel(Tab);
+    Select_control_buttons()
 }
+
+const controlLINK = 'http://localhost:3000/control';
+function DB_Controll(elem)
+{
+    let fun = elem.id;
+    db_c = document.getElementById('db_control');
+    let sender = document.createElement('center');
+    db_c.innerHTML = '';
+    let LINK = `${controlLINK}/${fun}/${Tab}`;
+    let form = `<form id=${LINK}>`;
+    if(Tab == 'OProducts')
+    {
+        if(fun === 'Add'){
+        sender.innerHTML = `
+        ${form}
+            <input class="TSearch" type="text" name="BarCode" placeholder="BarCode" required></br>
+            <input class="TSearch" type="text" name="Name" placeholder="Name"  required>
+            <input type="text" placeholder="Product Type Id" name="ProdTypeID" required>
+            <input type="text" placeholder="Price" name="Price" required>
+            <input type="text" placeholder="Stock" name="Stock" required>
+            <input type="submit" value="Input" formmethod="post" formaction="/control/${fun}/${Tab}"/>
+        </form>`
+        }
+        if(fun === 'Delete')
+        {
+            sender.innerHTML=`
+            ${form}
+                <input type="text" name="BarCode" placeholder="BarCode" required>
+                <input type="submit" value="delete" formmethod="post" formaction="/control/${fun}/${Tab}">
+            </form>`
+        }
+    }
+    if(Tab === 'OStores')
+    {
+        if(fun === 'Add')
+        {
+            sender.innerHTML=`
+            ${form}
+            <input type="text" name="StoreName" placeholder="Store Name" required>
+            <input type="text" name="Address" placeholder="Address" required>
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            </form>
+            `
+        }
+        if(fun === 'Delete')
+        {
+            sender.innerHTML =`
+            ${form}
+            <input type="text" name="StoreId" placeholder="Store Id" required>
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            </form>
+            `
+        }
+    }
+    db_c.append(sender);
+}
+
+function DB_control_panel(Tab)
+{
+    db_cp = document.getElementById('db_control_panel')
+    if(Tab === 'OProducts')
+    {
+        db_cp.innerHTML=`
+        <button onclick="DB_Controll(this)" id="Add">Add Product</button>
+        <button onclick="DB_Controll(this)" id="Delete">Delete Product</button>
+        `
+    }
+    if(Tab === 'OStores')
+    {
+        db_cp.innerHTML = `
+        <button onclick="DB_Controll(this)" id="Add">Add Store</button>
+        <button onclick="DB_Controll(this)" id="Delete">Delete Store</button>
+        `
+    }
+}
+
+function SelectForward()
+{
+    start += 20;
+    end += 20;
+    get_tab();
+}
+function SelectBack()
+{
+    if(start == 0 && end == 20)
+    {
+        start = 0;
+        end = 20;
+    }
+    else
+    {
+    start -= 20;
+    end -= 20;
+    }
+    get_tab();
+}
+function Select_control_buttons()
+{
+    let buttons = document.getElementById('list_control_buttons');
+    buttons.innerHTML = `
+    <button onclick="SelectBack()">"<"</button>
+    <p>${start} - ${end}</p>
+    <button onclick="SelectForward()">">"</button>
+    `
+}
+
+function RestoreToNewInstance()
+{
+    let div = document.getElementById('restore_new_in');
+    div.innerHTML=
+    `
+    <form method="post" action="/api/resireNewIn">
+    <input type="text" name="newDbName" placeholder="Name of new instance" required>
+    <input type="submit" value="create">
+    </form>
+    `
+}
+
+const OptLINK = 'http://localhost:3000/api/opt';

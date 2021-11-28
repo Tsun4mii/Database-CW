@@ -20,6 +20,13 @@ class masterDb {
             return pool.request().execute('restoreDB');
         })
     }
+
+    restoreNewInstance(name, res)
+    {
+        sql.connect(config).then(pool => {
+            return pool.request().query(`exec RestoreNewInstance ${name}`);
+        })
+    }
 }
 
 module.exports = masterDb;

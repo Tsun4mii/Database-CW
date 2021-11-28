@@ -91,10 +91,12 @@ class DB {
         })
     }
 
-    execWithParams(procName, params)
+    execWithParams(procName, params, res)
     {
         sql.connect(config).then(pool => {
-            return pool.request().query(`exec ${procName} ${params}`);
+            return pool.request().query(`exec ${procName} ${params}`,(err, data) => {
+                res.send(data.recordset);
+            });
         })
     }
 
