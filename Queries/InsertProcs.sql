@@ -16,6 +16,23 @@ begin
 	values(@login, @password, @email, @firstName, @secondName, @sex, @age, @userType);
 end;
 
+go 
+create procedure regAdmin
+				@login nvarchar(30),
+				@password nvarchar(30),
+				@typeid int,
+				@eid int
+as
+begin 
+	declare @c int;
+	declare @t int;
+	select @c = count(*) from EMPLOYEES where id = @eid; 
+	select @t = count(*) from ADMIN_TYPE where id = @typeid;
+	if(@c != 0 and @t != 0)
+		insert into STORE_ADMIN(adminLogin, adminPassword, adminType, employeeId) 
+		values(@login, @password, @typeid, @eid);
+end;
+
 select * from USERS;
 delete from USERS where id = 3;
 
@@ -44,3 +61,4 @@ as
 begin
 	insert into STORES(storeName, adress) values(@name, @adress);
 end;
+

@@ -173,3 +173,38 @@ begin
 	)
 	select * from row_nums where num between @start and @end;
 end;
+
+
+--select employee
+go
+create procedure SelectOneEmp
+				@id int
+as 
+begin
+	select * from EMPLOYEES where id = @id;
+End;
+
+go
+create function SelOneEmp(@id int)
+returns bit
+as
+begin
+	declare @res bit, @empCount int;
+	select @empCount = count(*) from EMPLOYEES where id = @id;
+	if(@empCount = 1)
+		set @res = 1;
+	else set @res = 0;
+	return @res ;
+End;
+
+drop function dbo.SelOneEmp;
+
+
+--
+go 
+create procedure logAdmin
+				@login nvarchar(30)
+as
+begin 
+	select * from STORE_ADMIN where STORE_ADMIN.adminLogin = @login;
+end;

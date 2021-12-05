@@ -169,13 +169,14 @@ function DB_Controll(elem)
             sender.innerHTML =`
             ${form}
             <input type="text" name="StoreId" placeholder="Store Id" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output">
             </form>
             `
         }
     }
     db_c.append(sender);
 }
+
 
 function DB_control_panel(Tab)
 {

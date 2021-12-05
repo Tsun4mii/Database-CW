@@ -16,15 +16,15 @@ class masterDb {
     }
 
     async restoreDb(req, res){
-        sql.connect(config).then(pool => {
-            return pool.request().execute('restoreDB');
+        return connectionPool.then(pool => {
+            pool.request().execute('restoreDB');
         })
     }
 
     restoreNewInstance(name, res)
     {
-        sql.connect(config).then(pool => {
-            return pool.request().query(`exec RestoreNewInstance ${name}`);
+        return connectionPool.then(pool => {
+            pool.request().query(`exec RestoreNewInstance ${name}`);
         })
     }
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=".\resourse\css\welcome.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <a>
+                <p>If u a user click this button: </p> 
+                <button onclick='location.href="http://localhost:5000/login"'>User login</button>
+            </a>
+            <a>
+                <p>if u an admin click this button: </p>
+                <button onclick='location.href="http://localhost:5000/adminlog"'>Admin login</button>
+            </a>
+        </div>
+    </div>
+</body>
+<script>
+    function redirUser()
+    {
+        window.location('http://localhost:5000/login')
+    }
+</script>
+</html>

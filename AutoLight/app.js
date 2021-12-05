@@ -2,14 +2,21 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 var path = require("path");
+const cookieSession = require('cookie-session');
 var exphbs = require("express-handlebars");
 const Db = require('./DB/db')
 const mDb = require('./DB/masterDb');
 let DB = new Db();
 let mDB = new mDb();
 
+let sess;
+
 app.use(express.static("./"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieSession({
+    name: 'session',
+    keys: ['shh', 'its a secret']
+}))
 app.engine('.hbs', exphbs({ defaultLayout: 'index', extname: '.hbs', layoutsDir: "views" }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.hbs');
@@ -24,7 +31,10 @@ app.get('/reg', (req, res)=>{
 
 app.post('/api/reg', (req, res)=>{
     console.log(req.body.login);
-    DB.regUser(req.body.login, req.body.password, req.body.email, req.body.firstName, req.body.lastName, req.body.sex, req.body.age, req.body.userType);
+    DB.regUser(req.body.login, req.body.password, req.body.email, req.body.firstName, req.body.lastName, req.body.sex, req.body.age, req.body.userType)
+    .then(() => {
+        res.json({status:'OK'})
+    });
 })
 
 app.post('/api/backup', (req, res)=>{
@@ -32,11 +42,19 @@ app.post('/api/backup', (req, res)=>{
     if(fs.existsSync(filePath))
     {
         fs.unlinkSync(filePath);
-        DB.backupDb();
+        DB.backupDb().then(() => {
+            res.json({status: 'OK'})
+        }).catch(err => {
+            res.json(err)
+        });
     }
     else
     {
-        DB.backupDb();
+        DB.backupDb().then(() => {
+            res.json({status: 'OK'})
+        }).catch(err => {
+            res.json(err)
+        });
     }
 })
 app.post('/api/resireNewIn', (req,res) => 
@@ -46,12 +64,17 @@ app.post('/api/resireNewIn', (req,res) =>
     mDB.restoreNewInstance(name);
 })
 app.post('/api/restore', (req, res)=>{
-    mDB.restoreDb(req, res);
+    mDB.restoreDb(req, res).then(() => {
+        res.json({status: 'OK'})
+    });
 })
 
 app.post('/login', (req, res)=>{
     console.log(req.body.login + ' ' + req.body.password);
-    DB.login(req, res, req.body.password, req.body.login);
+    DB.login(req, res, req.body.password, req.body.login).then(data =>{
+    }).catch(err => {
+        console.log(err);
+    });
 })
 app.get('/testdata', (req, res) => {
     res.sendFile(__dirname + '/views/testdata.html');
@@ -60,8 +83,29 @@ app.get("/login",(req, res)=>
 {
     res.sendFile(__dirname + '/views/login.html');
 });
+app.post('/logout', (req, res)=>{
+    req.session = null;
+    res.redirect('http://localhost:5000/')
+})
+app.get('/adminreg', (req,res) =>{
+    res.sendFile(__dirname + '/views/adminreg.html')
+})
+app.post('/adminreg', (req, res) => {
+    DB.regAdmin(req.body.login, req.body.password ,req.body.adminType, req.body.employeeId, res);
+})
+app.get('/adminlog', (req, res) =>{
+    res.sendFile(__dirname + '/views/adminlog.html')
+})
+app.post('/adminlog', (req, res)=>{
+    DB.logAdmin(req.body.login,req.body.password, res, req);
+})
+app.get('/user', (req, res) => {
+    if(req.session.role == 'user'){
+    res.sendFile(__dirname + '/views/user.html');
+    }
+})
 app.get('/', (req, res)=>{
-    res.end('hi');
+    res.sendFile(__dirname + '/views/index.html');
 })
 app.post('/', (req, res)=>{
     DB.selectAllUsers2(req, res);
@@ -80,7 +124,15 @@ app.post('/export/:type', (req, res) => {
     }
 })
 app.get('/admin', (req, res)=>{
+    //if(req.session.role !== 'admin')
+    //{
+    //    res.sendFile(__dirname + '/views/errors/DMLError.html');
+    //}
+    //else{
+    if(req.session.role == 'admin'){
     res.sendFile(__dirname + '/views/admin.html');
+    }
+
 })
 
 app.post('/control/:fun/:exec', (req, res) => {
@@ -92,8 +144,11 @@ app.post('/control/:fun/:exec', (req, res) => {
         param += ("'"+json[key]+"',");
     }
     param = param.slice(0, param.length-1);
-    console.log(param);
-    DB.execWithParams(Exec, param, res);
+    DB.execWithParams(Exec, param, res).then(records => {
+        res.json({status:"OK"});
+    }).catch(err => {
+        res.sendFile(__dirname + '/views/errors/DMLError.html');
+    });
 })
 
 app.get('/api/:proc/:start/:end',(req,res)=>{
@@ -101,7 +156,8 @@ app.get('/api/:proc/:start/:end',(req,res)=>{
     let params = '';
     params += req.params.start + ', ' + req.params.end;
     console.log(params);
-    DB.execWithParams(proc,params, res);
+    DB.execWithParams(proc,params, res).then(records => 
+        {res.json(records.recordset)});
 })
 
 app.listen(5000);
@@ -110,11 +166,11 @@ app.listen(5000);
 /*
 1. Добавить поставщиков и связать с товарами + вывод в таблицу ---- DONE!
 2. Добавить вывод по страницам(20 элементов) ---- DONE! FIX: сделать для всех функций ----DONE
-3. Добавить функционал восстановления в новую бд 
+3. Добавить функционал восстановления в новую бд ----DONE 
 4. Доделать CRUD и формы для всех нужных сущностей
-5. Оформить страницу обычного юзера
+5. Оформить страницу обычного юзера ----  DONE
 6. Добавить сессии и роутинг по сессии 
 7. Автоген 100000 строк для продуктов 
 8. Индексы
-9. ЕБУЧИЙ РЕФАКТОР
+9. ЕБУЧИЙ РЕФАКТОР --DONE?
 */

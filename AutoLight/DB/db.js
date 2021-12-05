@@ -18,14 +18,14 @@ class DB {
 
     async backupDb()
     {
-        sql.connect(config).then(pool => {
-            return pool.request().execute('backupDB');
+        return connectionPool.then(pool => {
+             pool.request().execute('backupDB');
         })
     }
 
     async restoreDb(){
-        sql.connect(config).then(pool => {
-            return pool.request().execute('restoreDB');
+        return connectionPool.then(pool => {
+            pool.request().execute('restoreDB');
         })
     }
 
@@ -38,12 +38,27 @@ class DB {
         })
     }
 
+    regAdmin(login, password, tid, eid, res)
+    {
+        let encPass = bcrypt.hashSync(password, 5);
+        return connectionPool.then(pool => pool.query(`exec regAdmin '${login}', '${encPass}', '${tid}', '${eid}'`, (err, data)=>{
+            if(data.rowsAffected == -1)
+            {
+                res.json({status: 'ERROR'});
+            }
+            else 
+            {
+                res.redirect('http://localhost:5000/admin')
+            }
+        }))
+    }
+
     async regUser(login, password, email, firstName, secondName, sex, age, userType)
     {
         let encPass = await bcrypt.hash(password, 10);
         console.log(encPass);
-        sql.connect(config).then(pool => {
-            return pool.request().input('login', sql.NVarChar, login)
+        return connectionPool.then(pool => {
+            pool.request().input('login', sql.NVarChar, login)
             .input('password', sql.NVarChar, encPass)
             .input('email', sql.NVarChar, email)
             .input('firstName', sql.NVarChar, firstName)
@@ -56,20 +71,44 @@ class DB {
             console.log(err);
         })
     }
+    logAdmin(login, password, res, req)
+    {
+        return connectionPool.then(pool => 
+            pool.query(`exec logAdmin ${login}`, (err, data)=>{
+                console.log(data);
+                if(bcrypt.compareSync(password, data.recordset[0].adminPassword))
+                {
+                    req.session.login = login;
+                    req.session.role = 'admin';
+                    res.redirect('http://localhost:5000/admin');
+                }
+                else{
+                    res.json({status:'ERROR'})
+                }
+            }))
+    }
     async login(req, res, password, login)
     {
-        sql.connect(config).then(pool => {
-            return pool.request().input('login', sql.NVarChar, login)
+        return connectionPool.then(pool => {
+            pool.request().input('login', sql.NVarChar, login)
             .execute('selOneUser',(err, data)=>{
                 if(bcrypt.compareSync(password, data.recordset[0].password))
                 {
-                    console.log(data.recordset);
-                    res.redirect('http://localhost:5000/testdata');
+                    req.session.login = data.recordset[0].login;
+                    req.session.role = 'user';
+                    res.redirect('http://localhost:5000/user');
                 }
-                else res.send('Wrong login or password')
+                else{
+                    res.json({status:'ERROR'})
+                }
+                if(data === undefined)
+                {
+                    res.json({status:'ERROR'})
+                }
             }); 
         }).catch(err => {
             console.log(err);
+            console.log('WRONG login or pass');
         })
     }
     selectAllUsers(req, res)
@@ -83,7 +122,7 @@ class DB {
 
     execNoParams(req, res, procName)
     {
-        sql.connect(config).then(pool => {
+        return connectionPool.then(pool => {
             return pool.request().query(`exec ${procName}`, (err, data)=> {
                 res.send(data.recordset);
             });
@@ -93,17 +132,14 @@ class DB {
 
     execWithParams(procName, params, res)
     {
-        sql.connect(config).then(pool => {
-            return pool.request().query(`exec ${procName} ${params}`,(err, data) => {
-                res.send(data.recordset);
-            });
-        })
+        return connectionPool.then(pool => 
+             pool.query(`exec ${procName} ${params}`))
     }
 
     ExProdToXml(req, res)
     {
-        sql.connect(config).then(pool => {
-            return pool.request().execute('ExProdToXml', (err, data) =>{
+        return connectionPool.then(pool => {
+            pool.request().execute('ExProdToXml', (err, data) =>{
                 res.send(data.recordsets[0]);
             })
         })
@@ -111,8 +147,8 @@ class DB {
 
     ImProdFromXml(req, res)
     {
-        sql.connect(config).then(pool => {
-            return pool.request().execute('ImProdfromXml', (err, data) =>{
+        return connectionPool.then(pool => {
+                pool.request().execute('ImProdfromXml', (err, data) =>{
                 res.send(data.recordsets[0]);
             })
         })
