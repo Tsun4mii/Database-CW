@@ -15,3 +15,11 @@ as
 begin
 	delete from STORES where id = @id;
 end;
+
+go
+create procedure OPostsDelete
+				 @id int
+as
+begin 
+	delete from POSTS where id = @id;
+end;

@@ -19,7 +19,7 @@ end;
 go 
 create procedure regAdmin
 				@login nvarchar(30),
-				@password nvarchar(30),
+				@password nvarchar(200),
 				@typeid int,
 				@eid int
 as
@@ -62,3 +62,11 @@ begin
 	insert into STORES(storeName, adress) values(@name, @adress);
 end;
 
+
+go 
+create procedure OPostsAdd
+				 @post nvarchar(50)
+as 
+begin 
+	insert into POSTS(post) values(@post);
+end;

@@ -208,3 +208,16 @@ as
 begin 
 	select * from STORE_ADMIN where STORE_ADMIN.adminLogin = @login;
 end;
+
+
+go
+create procedure SearchProd
+				@code nvarchar(12)
+as
+begin
+	select PRODUCTS.prodCode, PRODUCTS.prodName, PRODUCTS.prodPrice, PRODUCTS.prodStock, PRODUCT_TYPE.prodType 
+		from PRODUCTS join PRODUCT_TYPE on PRODUCTS.typeProdId = PRODUCT_TYPE.id where prodCode = @code or prodCode like '%'+@code+'%';
+end;
+
+drop procedure SearchProd;
+exec SearchProd 'ALFC';

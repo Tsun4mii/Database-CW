@@ -83,4 +83,27 @@ exec AGSuppliers;
 
 select COUNT(*) from SUPPLIERS;
 
-go create procedure
+go 
+create procedure AGProducts
+as
+begin 
+	declare @barcode nvarchar(12),
+			@prodname nvarchar(30),
+			@price numeric(8,2),
+			@number int;
+	set @number = 1;
+	while @number < 10
+		begin
+			exec CreateBarcode @barcode OUTPUT;
+			exec CreateName 30, @prodname OUTPUT;
+			set @price = CAST(((ABS(CHECKSUM(NEWID()) % 600*100)+1*100)/100)as numeric(8,2))
+			insert into PRODUCTS(prodCode,prodName,prodPrice,typeProdId,prodStock,supId)
+			values(@barcode, @prodname, @price, FLOOR(RAND()*(42-10+1))+10,
+			ABS(CHECKSUM(NEWID()) % 2000) + 100,ABS(CHECKSUM(NEWID()) % 2000) + 100)
+			set @number = @number + 1;
+		end;
+end;
+drop procedure AGProducts;
+exec AGProducts;
+
+delete from PRODUCTS where id between 7 and 15

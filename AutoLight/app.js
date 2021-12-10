@@ -103,6 +103,9 @@ app.get('/user', (req, res) => {
     if(req.session.role == 'user'){
     res.sendFile(__dirname + '/views/user.html');
     }
+    else{
+        res.sendFile(__dirname + '/views/errors/PrivError.html');
+    }
 })
 app.get('/', (req, res)=>{
     res.sendFile(__dirname + '/views/index.html');
@@ -120,17 +123,17 @@ app.post('/export/:type', (req, res) => {
         DB.ExProdToXml(req, res)
     }
     else if(proc == 'ImProdFromXml'){
-        DB.ImProdFromXml(req, res);
+        DB.ImProdFromXml(req, res).then(() => {
+            res.json({status: 'OK'})
+        });
     }
 })
 app.get('/admin', (req, res)=>{
-    //if(req.session.role !== 'admin')
-    //{
-    //    res.sendFile(__dirname + '/views/errors/DMLError.html');
-    //}
-    //else{
     if(req.session.role == 'admin'){
     res.sendFile(__dirname + '/views/admin.html');
+    }
+    else{
+        res.sendFile(__dirname + '/views/errors/PrivError.html');
     }
 
 })
@@ -155,11 +158,42 @@ app.get('/api/:proc/:start/:end',(req,res)=>{
     let proc = req.params.proc;
     let params = '';
     params += req.params.start + ', ' + req.params.end;
-    console.log(params);
     DB.execWithParams(proc,params, res).then(records => 
-        {res.json(records.recordset)});
+        {
+            res.json(records.recordset)});
 })
-
+app.post('/api/search', (req, res) => {
+    let code = req.body.code;
+    DB.execWithParams('SearchProd', code, res).then(records => 
+        {
+            res.json(records.recordset)
+        });
+})
+app.post('/api/changeDb', (req,res)=>{
+    let dbName = req.body.name;
+    DB.connectToReserve(dbName, res);
+})
+app.post('/api/addToBucket', (req, res) => {
+    let code = req.body.code;
+    let amount = req.body.amount;
+    let login = req.session.login;
+    let params = code + ', ' + login + ', ' + amount;
+    DB.execWithParams('AddToBucket', params, res).then(records =>
+        {
+            res.json({status:'OK'});
+        }).catch(err => {
+            console.log(err);
+        })
+})
+app.post('/api/OBucket', (req, res)=>{
+    let id = req.session.id;
+    let params = req.body.start + ', ' + req.body.end +', ' + id;
+    DB.execWithParams('OBucket', params, res).then(records => {
+        res.json(records.recordset);
+    }).catch(err => {
+        console.log('not error');
+    })
+})
 app.listen(5000);
 
 //TODO: 
@@ -169,7 +203,7 @@ app.listen(5000);
 3. Добавить функционал восстановления в новую бд ----DONE 
 4. Доделать CRUD и формы для всех нужных сущностей
 5. Оформить страницу обычного юзера ----  DONE
-6. Добавить сессии и роутинг по сессии 
+6. Добавить сессии и роутинг по сессии  ----DONE
 7. Автоген 100000 строк для продуктов 
 8. Индексы
 9. ЕБУЧИЙ РЕФАКТОР --DONE?

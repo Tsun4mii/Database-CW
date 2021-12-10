@@ -57,6 +57,24 @@ function TagTab(element)
             <td id="SupAddr">Address</td>
             </tr>`
             break;
+        case 'SearchProd':
+            defTr = `<tr>
+            <td id="ProdCode">Code</td>
+            <td id="ProdName">Name</td>
+            <td id="ProdPrice">Price</td>
+            <td id="ProdStock">Stock</td>
+            <td id="ProdType">Type</td>
+            </tr>`
+            break;
+        case 'OBucket':
+            defTr = `<tr>
+            <td id="ProdCode">Code</td>
+            <td id="ProdName">Name</td>
+            <td id="ProdPrice">Price</td>
+            <td id="ProdStock">Amount</td>
+            <td id="ProdType">Total Price</td>
+            </tr>`
+            break;
     }
     get_tab();
 }
@@ -70,10 +88,24 @@ async function get_tab()
     let load = document.createElement('div');
     load.innerHTML = '<span> LOADING... </span>';
     container.append(load, document.createElement('br'));
-    let LINK = `${fLink}/${Tab}`;
+    let LINK = `${fLink}/search`;
     let LINK2 = `${fLink}/${Tab}/${start}/${end}`
-
-    fetch(LINK2).then(res => res.json()).then(res => 
+    let LINK3 = `${fLink}/OBucket`;
+    if(Tab === 'OBucket')
+    {
+        fetch(LINK3, {
+            method: 'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    start: start,
+                    end:end   
+                }
+            )
+        }).then(res => res.json()).then(res => 
         {
             let container = document.getElementById('out_data');
             container.innerHTML = '';
@@ -83,34 +115,93 @@ async function get_tab()
             table.setAttribute('class', 'centerTable');
             table.innerHTML = defTr;
 
-            res.forEach(row => {
+            res.forEach(row =>{
                 load.remove();
                 let pulp = document.createElement('tr');
-                switch(Tab)
-                {
-                    case 'OUsers':
-                        pulp.innerHTML = `<td>${row.login}</td><td>${row.password}</td><td>${row.email}</td><td>${row.firstName}</td><td>${row.secondName}</td><td>${row.sex}</td><td>${row.age}</td>`;
-                    break;
-                    case 'OProdTypes':
-                        pulp.innerHTML = `<td>${row.id}</td><td>${row.prodType}</td><td>${row.depart}</td>`;
-                    break;
-                    case 'OProducts':
-                        pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.prodStock}</td><td>${row.prodType}</td>`
-                    break;
-                    case 'OPosts':
-                        pulp.innerHTML = `<td>${row.id}</td><td>${row.post}</id>`
-                    break;
-                    case 'OStores':
-                        pulp.innerHTML = `<td>${row.id}</td><td>${row.storeName}</td><td>${row.adress}</td>`
-                    break;
-                    case 'OSuppliers':
-                        pulp.innerHTML = `<td>${row.id}</td><td>${row.supName}</td><td>${row.supAddress}</td>`
-                    break;
-                }
+                pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.amount}</td><td>${row.prodPrice * row.amount}</td>`
+
                 table.append(pulp);
             })
             container.append(table);
         })
+    }
+    if(Tab === 'SearchProd')
+    {
+        let code = document.getElementById('code');
+        fetch(LINK, {
+            method: 'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    code: code.value
+                }
+            )
+        }).then(res => res.json()).then(res => 
+        {
+            let container = document.getElementById('out_data');
+            container.innerHTML = '';
+
+            let table = document.createElement('table');
+            table.setAttribute('border', 1);
+            table.setAttribute('class', 'centerTable');
+            table.innerHTML = defTr;
+
+            res.forEach(row =>{
+                load.remove();
+                let pulp = document.createElement('tr');
+                pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.prodStock}</td><td>${row.prodType}</td>`
+
+                table.append(pulp);
+            })
+            container.append(table);
+        })
+
+    }
+    else{
+        fetch(LINK2).then(res => res.json()).then(res => 
+            {
+                let container = document.getElementById('out_data');
+                container.innerHTML = '';
+                let rowId = 0;
+                let table = document.createElement('table');
+                table.setAttribute('border', 1);
+                table.setAttribute('class', 'centerTable');
+                table.innerHTML = defTr;
+    
+                res.forEach(row => {
+                    load.remove();
+                    let pulp = document.createElement('tr');
+                    pulp.setAttribute('id', `${rowId}`);
+                    rowId = rowId + 1;
+                    switch(Tab)
+                    {
+                        case 'OUsers':
+                            pulp.innerHTML = `<td>${row.login}</td><td>${row.password}</td><td>${row.email}</td><td>${row.firstName}</td><td>${row.secondName}</td><td>${row.sex}</td><td>${row.age}</td>`;
+                        break;
+                        case 'OProdTypes':
+                            pulp.innerHTML = `<td>${row.id}</td><td>${row.prodType}</td><td>${row.depart}</td>`;
+                        break;
+                        case 'OProducts':
+                            pulp.innerHTML = `<td id="data">${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td id="data">${row.prodStock}</td><td>${row.prodType}</td><td class='tdi'><input type="number" name="amount"/><button onclick="addToBucket()">Add to card</button></td>`
+                        break;
+                        case 'OPosts':
+                            pulp.innerHTML = `<td>${row.id}</td><td>${row.post}</id>`
+                        break;
+                        case 'OStores':
+                            pulp.innerHTML = `<td>${row.id}</td><td>${row.storeName}</td><td>${row.adress}</td>`
+                        break;
+                        case 'OSuppliers':
+                            pulp.innerHTML = `<td>${row.id}</td><td>${row.supName}</td><td>${row.supAddress}</td>`
+                        break;
+                    }
+                    table.append(pulp);
+                })
+                container.append(table);
+            })
+        }
     Select_control_buttons()
 }
 
@@ -143,4 +234,24 @@ function Select_control_buttons()
     <button onclick="SelectForward()">">"</button>
     `
 }
+
+function addToBucket()
+{
+
+    let rowId = event.target.parentNode.parentNode.id;
+    let data = document.getElementById(rowId).querySelectorAll('#data');
+    let amount = document.getElementById(rowId).querySelector('td.tdi > input[name=amount]');
+    let link = `${fLink}/AddToBucket`
+    fetch(link, {
+        method: 'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+            code:data[0].innerHTML,
+            amount: amount.value
+        })
+    })
+}
+
 

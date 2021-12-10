@@ -9,7 +9,11 @@
     <link rel="stylesheet" href=".\resourse\css\index.css">
 </head>
 <body>
-    <nav>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    
+    <nav class="center_nav">
         <button class = "bn33" onclick="TagTab(this)" id="OUsers">Get Users</button>
         <button class = "bn33" onclick="TagTab(this)" id="OProdTypes">Get Product Types</button>
         <button class = "bn33" onclick="TagTab(this)" id="OProducts">Get Products</button>
@@ -17,6 +21,10 @@
         <button class = "bn33" onclick="TagTab(this)" id="OStores">Get Stores</button>
         <button class = "bn33" onclick="TagTab(this)" id="OSuppliers">Get Suppliers</button>
     </nav>
+    <div class="search">
+        <input type="text" id="code"/>
+        <input type="button" onclick="TagTab(this)" id="SearchProd" value="Search" class="bn33"/>
+    </div>
     <div id="out_data">
         
     </div>
@@ -39,8 +47,12 @@
             <button type="submit">Import data from XML</button>
         </form>
         <button onclick="RestoreToNewInstance()">Restore to new instance</button>
+        <button onclick="Reconnect()">Reconnect to reserve db</button>
     </div>
     <div id="restore_new_in">
+
+    </div>
+    <div id="connectRes">
 
     </div>
     <div>
@@ -48,5 +60,6 @@
             <button>logout</button>
         </form>
     </div>
+</div>
 </body>
 </html>

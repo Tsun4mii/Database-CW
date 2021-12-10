@@ -6,6 +6,12 @@ const config = {
     "connectionString": "Driver={SQL Server Native Client 11.0};Server={DESKTOP-23I014S};Database={CW_DB};Trusted_Connection={yes};"
 }
 
+const resConfig = {
+    "driver":"msnodesqlv8",
+    "connectionString": ""
+}
+
+
 let connectionPool;
 
 class DB {
@@ -94,6 +100,7 @@ class DB {
             .execute('selOneUser',(err, data)=>{
                 if(bcrypt.compareSync(password, data.recordset[0].password))
                 {
+                    req.session.id = data.recordset[0].id;
                     req.session.login = data.recordset[0].login;
                     req.session.role = 'user';
                     res.redirect('http://localhost:5000/user');
@@ -148,10 +155,21 @@ class DB {
     ImProdFromXml(req, res)
     {
         return connectionPool.then(pool => {
-                pool.request().execute('ImProdfromXml', (err, data) =>{
-                res.send(data.recordsets[0]);
+                pool.request().execute('ImProdfromXml');
             })
-        })
+    }
+
+    connectToReserve(newDbName, res)
+    {
+        let newString = `Driver={SQL Server Native Client 11.0};Server={DESKTOP-23I014S};Database={${newDbName}};Trusted_Connection={yes};`
+        resConfig.connectionString = newString;
+        console.log(resConfig.connectionString);
+        connectionPool.then(pool => pool.close());
+        connectionPool = new sql.ConnectionPool(resConfig).connect().then(pool =>{
+            console.log('Connected to reserve MSSQL server');
+            return pool;
+        }).catch(err => console.log('Connection failed: ', err));
+        res.json({});
     }
 }
 
