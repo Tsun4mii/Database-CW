@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const config = {
     "driver":"msnodesqlv8",
-    "connectionString": "Driver={SQL Server Native Client 11.0};Server={DESKTOP-23I014S};Database={CW_DB};Trusted_Connection={yes};"
+    "connectionString": "Driver={SQL Server Native Client 11.0};Server={DESKTOP-23I014S};Database={CW_DB};Trusted_Connection={yes};",
 }
 
 const resConfig = {
@@ -100,7 +100,7 @@ class DB {
             .execute('selOneUser',(err, data)=>{
                 if(bcrypt.compareSync(password, data.recordset[0].password))
                 {
-                    req.session.id = data.recordset[0].id;
+                    req.session.userId = data.recordset[0].id;
                     req.session.login = data.recordset[0].login;
                     req.session.role = 'user';
                     res.redirect('http://localhost:5000/user');
@@ -168,8 +168,8 @@ class DB {
         connectionPool = new sql.ConnectionPool(resConfig).connect().then(pool =>{
             console.log('Connected to reserve MSSQL server');
             return pool;
-        }).catch(err => console.log('Connection failed: ', err));
-        res.json({});
+        }).catch(err => res.json({status:'ERROR'}));
+        
     }
 }
 

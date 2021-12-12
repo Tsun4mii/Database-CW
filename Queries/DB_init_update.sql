@@ -6,8 +6,11 @@ create table PRODUCT_STORE
 	constraint ProdStore_Product foreign key (prodId) references PRODUCTS(id),
 	storeId int,
 	constraint ProdStore_Store foreign key (storeId) references STORES(id),
-	primary key (prodId, storeId)
+	primary key (prodId, storeId),
+	prodStock int
 )
+
+drop table PRODUCT_STORE;
 
 create table USER_BUCKET
 (

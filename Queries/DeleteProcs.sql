@@ -23,3 +23,12 @@ as
 begin 
 	delete from POSTS where id = @id;
 end;
+
+go 
+create procedure DeleteFromBucket
+				 @prodId int,
+				 @userId int
+as 
+begin 
+	delete from USER_BUCKET where prodId = @prodId and userId = @userId;
+end;

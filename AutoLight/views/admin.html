@@ -20,6 +20,9 @@
         <button class = "bn33" onclick="TagTab(this)" id="OPosts">Get Posts</button>
         <button class = "bn33" onclick="TagTab(this)" id="OStores">Get Stores</button>
         <button class = "bn33" onclick="TagTab(this)" id="OSuppliers">Get Suppliers</button>
+        <form method="post" action="/logout">
+            <button class = "bn33" >logout</button>
+        </form>
     </nav>
     <div class="search">
         <input type="text" id="code"/>
@@ -33,32 +36,41 @@
     </div>
     <div id="db_control_panel" class="db_cp">
     </div>
-    <iframe name="output" class="invis">
-
-    </iframe>
     <div id="db_control">
 
     </div>
-    <div>
-        <form method="post" action="/export/ExProdToXml">
-            <button type="submit">Export data to XML</button>
-        </form>
-        <form method="post" action="/export/ImProdFromXml">
-            <button type="submit">Import data from XML</button>
-        </form>
-        <button onclick="RestoreToNewInstance()">Restore to new instance</button>
-        <button onclick="Reconnect()">Reconnect to reserve db</button>
-    </div>
-    <div id="restore_new_in">
+    <div class="center_info">
+    <p>Command result info:</p>
+    <iframe name="output" class="invis">
 
-    </div>
-    <div id="connectRes">
-
+    </iframe>
     </div>
     <div>
-        <form method="post" action="/logout">
-            <button>logout</button>
+    <form action="/api/backup" method="post" class="marg">
+        <button type="submit" class = "bn33" formtarget="output">BACKUP DB</button>
+    </form>
+    <form action="/api/restore" method="post" class="marg">
+        <button type="submit" class = "bn33" formtarget="output">RESTORE DB</button>
+    </form>
+</div>
+    <div class="marg">
+        <form method="post" action="/export/ExProdToXml" class="marg">
+            <button type="submit" class = "bn33" >Export data to XML</button>
         </form>
+        <form method="post" action="/export/ImProdFromXml" class="marg">
+            <button type="submit" class = "bn33" >Import data from XML</button>
+        </form>
+        <button onclick="RestoreToNewInstance()" class = "bn33" class="marg">Restore to new instance</button>
+        <button onclick="Reconnect()" class = "bn33" class="marg" >Reconnect to reserve db</button>
+    </div>
+    <div id="restore_new_in" class="marg">
+
+    </div>
+    <div id="connectRes" class="marg">
+
+    </div>
+    <div>
+        
     </div>
 </div>
 </body>

@@ -15,9 +15,9 @@ class masterDb {
         }).catch(err => console.log('Connection failed: ', err));
     }
 
-    async restoreDb(req, res){
+    restoreDb(req, res){
         return connectionPool.then(pool => {
-            pool.request().execute('restoreDB');
+            pool.request().query('exec restoreDB');
         })
     }
 

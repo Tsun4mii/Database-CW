@@ -94,6 +94,7 @@ begin
 	with row_nums as
 	(
 		SELECT row_number() over(order by PRODUCT_TYPE.id) as num, 
+		PRODUCTS.id,
 		PRODUCTS.prodCode, PRODUCTS.prodName, PRODUCTS.prodPrice, PRODUCTS.prodStock, PRODUCT_TYPE.prodType 
 		from PRODUCTS join PRODUCT_TYPE on PRODUCTS.typeProdId = PRODUCT_TYPE.id
 	)
@@ -215,9 +216,43 @@ create procedure SearchProd
 				@code nvarchar(12)
 as
 begin
-	select PRODUCTS.prodCode, PRODUCTS.prodName, PRODUCTS.prodPrice, PRODUCTS.prodStock, PRODUCT_TYPE.prodType 
+	select PRODUCTS.id, PRODUCTS.prodCode, PRODUCTS.prodName, PRODUCTS.prodPrice, PRODUCTS.prodStock, PRODUCT_TYPE.prodType 
 		from PRODUCTS join PRODUCT_TYPE on PRODUCTS.typeProdId = PRODUCT_TYPE.id where prodCode = @code or prodCode like '%'+@code+'%';
 end;
 
 drop procedure SearchProd;
-exec SearchProd 'ALFC';
+
+
+go 
+create procedure OBucket
+				@start int,
+				@end int, 
+				@login nvarchar(50)
+as 
+begin
+declare @id int;
+	select @id = id from USERS where login = @login;
+	with row_nums as
+	(
+		SELECT row_number() over(order by USER_BUCKET.prodId) as num,
+		PRODUCTS.id,
+		prodCode, prodName, prodPrice, amount from PRODUCTS inner join USER_BUCKET on 
+		PRODUCTS.id = USER_BUCKET.prodId where USER_BUCKET.userId = @id
+	)
+	select * from row_nums where num between @start and @end;
+end;
+
+drop procedure OBucket;
+
+go
+create procedure OProdStores
+				 @id int
+as 
+begin
+	select prodCode, prodName, storeName, PRODUCT_STORE.prodStock, adress from PRODUCTS inner join PRODUCT_STORE on PRODUCTS.id = PRODUCT_STORE.prodId
+	inner join STORES on PRODUCT_STORE.storeId = STORES.id where PRODUCTS.id = @id;
+end;
+
+exec OProdStores 21
+drop procedure OProdStores;
+insert into PRODUCT_STORE(prodId, storeId, prodStock) values(1, 10, 92)

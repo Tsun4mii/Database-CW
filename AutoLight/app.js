@@ -61,7 +61,9 @@ app.post('/api/resireNewIn', (req,res) =>
 {
     console.log(req.body.newDbName);
     let name = "'"+req.body.newDbName + "'";
-    mDB.restoreNewInstance(name);
+    mDB.restoreNewInstance(name).then(() => {
+        res.json({status: 'OK'})
+    });
 })
 app.post('/api/restore', (req, res)=>{
     mDB.restoreDb(req, res).then(() => {
@@ -186,13 +188,24 @@ app.post('/api/addToBucket', (req, res) => {
         })
 })
 app.post('/api/OBucket', (req, res)=>{
-    let id = req.session.id;
-    let params = req.body.start + ', ' + req.body.end +', ' + id;
+    let id = req.session.login;
+    console.log(id);
+    let params = req.body.start + ', ' + req.body.end +', ' + "'" +  id + "'";
     DB.execWithParams('OBucket', params, res).then(records => {
         res.json(records.recordset);
     }).catch(err => {
         console.log('not error');
     })
+});
+app.post('/api/ProdStores', (req, res) => {
+    let code = req.body.code;
+    DB.execWithParams('OProdStores', code, res).then(records => {
+        res.json(records.recordset);
+    })
+})
+app.post('/api/deleteFromBucket', (req, res) => {
+    let params =  req.body.prodId + ', ' +req.session.userId;
+    DB.execWithParams('DeleteFromBucket', params, res).then(data => {res.json({statue: 'OK'})});  
 })
 app.listen(5000);
 

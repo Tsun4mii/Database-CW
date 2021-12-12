@@ -43,11 +43,21 @@ td{
     margin: 0px;
 }
 
-
+.center_info
+{
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+.center_info p{
+    margin-right: 10px;
+}
 .bn33 {
     border: 5em;
     cursor: pointer;
     outline: none;
+    font-family: 'Poppins',sans-serif;
     font-size: 13px;
     -webkit-transform: translate(0);
     transform: translate(0);
@@ -112,6 +122,8 @@ td{
     padding: 0.7em 2em;
     margin-left: 10px;
     margin-right: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     border-radius: 1px;
     border-radius: 10px;
     box-shadow: 1px 1px 10px rgba(255, 255, 255, 0.438);
@@ -121,9 +133,10 @@ td{
   }
   .invis
   {
-      visibility: hidden;
-      height: 1px;
-      width: 1px;
+      border-radius: 5px;
+      border-color: black;
+      height: 50px;
+      width: 150px;
   }
 
   .search{
@@ -155,4 +168,9 @@ td{
     right: -90px;
     bottom: -100px;
     
+}
+
+.marg{
+    margin-top: 6px;
+    margin-bottom: 6px;
 }

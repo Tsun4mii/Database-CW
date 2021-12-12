@@ -30,6 +30,7 @@ function TagTab(element)
             break;
         case 'OProducts':
             defTr = `<tr>
+            <td id="ProdCode">id</td>
             <td id="ProdCode">Code</td>
             <td id="ProdName">Name</td>
             <td id="ProdPrice">Price</td>
@@ -59,6 +60,7 @@ function TagTab(element)
             break;
         case 'SearchProd':
             defTr = `<tr>
+            <td id="ProdCode">id</td>
             <td id="ProdCode">Code</td>
             <td id="ProdName">Name</td>
             <td id="ProdPrice">Price</td>
@@ -68,11 +70,21 @@ function TagTab(element)
             break;
         case 'OBucket':
             defTr = `<tr>
+            <td id="ProdCode">id</td>
             <td id="ProdCode">Code</td>
             <td id="ProdName">Name</td>
             <td id="ProdPrice">Price</td>
             <td id="ProdStock">Amount</td>
             <td id="ProdType">Total Price</td>
+            </tr>`
+            break;
+        case 'OProdStores':
+            defTr = `<tr>
+            <td id="ProdCode">Code</td>
+            <td id="ProdName">Name</td>
+            <td id="ProdPrice">Store name</td>
+            <td id="ProdStock">Store address</td>
+            <td id="ProdType">Stock</td>
             </tr>`
             break;
     }
@@ -102,14 +114,14 @@ async function get_tab()
             body: JSON.stringify(
                 {
                     start: start,
-                    end:end   
+                    end: end   
                 }
             )
         }).then(res => res.json()).then(res => 
         {
             let container = document.getElementById('out_data');
             container.innerHTML = '';
-
+            let rowId = 0;
             let table = document.createElement('table');
             table.setAttribute('border', 1);
             table.setAttribute('class', 'centerTable');
@@ -118,7 +130,9 @@ async function get_tab()
             res.forEach(row =>{
                 load.remove();
                 let pulp = document.createElement('tr');
-                pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.amount}</td><td>${row.prodPrice * row.amount}</td>`
+                pulp.setAttribute('id', `${rowId}`);
+                rowId = rowId + 1;
+                pulp.innerHTML = `<td class="id">${row.id}</td><td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.amount}</td><td>${row.prodPrice * row.amount}</td><td><button onclick="deleteFromBucket()">delete</button></td>`
 
                 table.append(pulp);
             })
@@ -143,7 +157,7 @@ async function get_tab()
         {
             let container = document.getElementById('out_data');
             container.innerHTML = '';
-
+            let rowId = 0;
             let table = document.createElement('table');
             table.setAttribute('border', 1);
             table.setAttribute('class', 'centerTable');
@@ -152,7 +166,9 @@ async function get_tab()
             res.forEach(row =>{
                 load.remove();
                 let pulp = document.createElement('tr');
-                pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.prodStock}</td><td>${row.prodType}</td>`
+                pulp.setAttribute('id', `${rowId}`);
+                rowId = rowId + 1;
+                pulp.innerHTML = `<td id="id">${row.id}</td><td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td>${row.prodStock}</td><td>${row.prodType}</td><td><button onclick=checkStock() class="bn33">check stock</button></button></td>`
 
                 table.append(pulp);
             })
@@ -185,7 +201,7 @@ async function get_tab()
                             pulp.innerHTML = `<td>${row.id}</td><td>${row.prodType}</td><td>${row.depart}</td>`;
                         break;
                         case 'OProducts':
-                            pulp.innerHTML = `<td id="data">${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td id="data">${row.prodStock}</td><td>${row.prodType}</td><td class='tdi'><input type="number" name="amount"/><button onclick="addToBucket()">Add to card</button></td>`
+                            pulp.innerHTML = `<td id="id">${row.id}</td><td id="data">${row.prodCode}</td><td>${row.prodName}</td><td>${row.prodPrice}</td><td id="data">${row.prodStock}</td><td>${row.prodType}</td><td class='tdi'><input type="number" name="amount"/><button onclick="addToBucket()" class="bn33">Add to card</button><button onclick=checkStock() class="bn33">check stock</button></button></td>`
                         break;
                         case 'OPosts':
                             pulp.innerHTML = `<td>${row.id}</td><td>${row.post}</id>`
@@ -241,6 +257,12 @@ function addToBucket()
     let rowId = event.target.parentNode.parentNode.id;
     let data = document.getElementById(rowId).querySelectorAll('#data');
     let amount = document.getElementById(rowId).querySelector('td.tdi > input[name=amount]');
+    console.log(amount.value);
+    if(amount.value === '')
+    {
+        alert('Input amount of product')
+    }
+    else{
     let link = `${fLink}/AddToBucket`
     fetch(link, {
         method: 'POST',
@@ -252,6 +274,81 @@ function addToBucket()
             amount: amount.value
         })
     })
+    }
+}
+function checkStock()
+{
+    let LINK4 = `${fLink}/ProdStores`;
+    let rowId = event.target.parentNode.parentNode.id;
+    let data = document.getElementById(rowId).querySelectorAll('#id');
+    console.log(data[0].innerHTML);
+
+    let container = document.getElementById('out_data');
+    container.innerHTML='';
+    let load = document.createElement('div');
+    load.innerHTML = '<span> LOADING... </span>';
+    container.append(load, document.createElement('br'));
+    fetch(LINK4, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(
+            {
+                code: data[0].innerHTML
+            }
+        )
+    }).then(res => res.json()).then(res => 
+    {
+        let container = document.getElementById('out_data');
+        container.innerHTML = '';
+        defTr = `<tr>
+        <td id="ProdCode">Code</td>
+        <td id="ProdName">Name</td>
+        <td id="ProdPrice">Store name</td>
+        <td id="ProdStock">Store address</td>
+        <td id="ProdType">Stock</td>
+        </tr>`;
+        let table = document.createElement('table');
+        table.setAttribute('border', 1);
+        table.setAttribute('class', 'centerTable');
+        table.innerHTML = defTr;
+
+        res.forEach(row =>{
+            load.remove();
+            let pulp = document.createElement('tr');
+            pulp.innerHTML = `<td>${row.prodCode}</td><td>${row.prodName}</td><td>${row.storeName}</td><td>${row.adress}</td><td>${row.prodStock}</td>`
+
+            table.append(pulp);
+        })
+        container.append(table);
+    })
+
 }
 
+function deleteFromBucket()
+{
+    let rowId = event.target.parentNode.parentNode.id;
+    let data = document.getElementById(rowId).querySelectorAll('.id');
+    let LINK5 = `${fLink}/deleteFromBucket`;
+    fetch(LINK5, {
+        method: 'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+            prodId:data[0].innerHTML
+        })
+    }).then(data => {
+        console.log(data);
+        if(data.status == 200)
+        {
+            alert('Item deleted from bucket')
+        }
+        else{
+            alert('error occured')
+        }
+    });
+}
 

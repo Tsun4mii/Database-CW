@@ -185,7 +185,7 @@ function DB_Controll(elem)
             <input type="text" placeholder="Product Type Id" name="ProdTypeID" required>
             <input type="text" placeholder="Price" name="Price" required>
             <input type="text" placeholder="Stock" name="Stock" required>
-            <input type="submit" value="Input" formmethod="post" formaction="/control/${fun}/${Tab}"/>
+            <input type="submit" value="Input" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33" />
         </form>`
         }
         if(fun === 'Delete')
@@ -193,7 +193,7 @@ function DB_Controll(elem)
             sender.innerHTML=`
             ${form}
                 <input type="text" name="BarCode" placeholder="BarCode" required>
-                <input type="submit" value="delete" formmethod="post" formaction="/control/${fun}/${Tab}">
+                <input type="submit" value="delete" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>`
         }
         if(fun === 'Update')
@@ -207,7 +207,7 @@ function DB_Controll(elem)
                 <input type="text" placeholder="Price" name="Price" required>
                 <input type="text" placeholder="Stock" name="Stock" required>
                 <input type="text" placeholder="SupId" name="SupId" required>
-                <input type="submit" value="Input" formmethod="post" formaction="/control/${fun}/${Tab}"/>
+                <input type="submit" value="Input" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>`   
         }
     }
@@ -219,7 +219,7 @@ function DB_Controll(elem)
             ${form}
             <input type="text" name="StoreName" placeholder="Store Name" required>
             <input type="text" name="Address" placeholder="Address" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>
             `
         }
@@ -228,7 +228,7 @@ function DB_Controll(elem)
             sender.innerHTML =`
             ${form}
             <input type="text" name="StoreId" placeholder="Store Id" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>
             `
         }
@@ -239,7 +239,7 @@ function DB_Controll(elem)
             <input type="text" name="StoreId" placeholder="Store Id" required>
             <input type="text" name="StoreName" placeholder="Store Name" required>
             <input type="text" name="Address" placeholder="Address" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>`
         }
     }
@@ -251,7 +251,7 @@ function DB_Controll(elem)
             ${form}
             <input type="text" name="PostId" placeholder="Post Id" required>
             <input type="text" name="Post" placeholder="Post Name" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>` 
         }
         if(fun === 'Add')
@@ -259,7 +259,7 @@ function DB_Controll(elem)
             sender.innerHTML=`
             ${form}
             <input type="text" name="Post" placeholder="Post Name" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>` 
         }
         if(fun === 'Delete')
@@ -267,13 +267,16 @@ function DB_Controll(elem)
             sender.innerHTML=`
             ${form}
             <input type="text" name="PostId" placeholder="Post Id" required>
-            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}">
+            <input type="submit" value="Add" formmethod="post" formaction="/control/${fun}/${Tab}" formtarget="output" class = "bn33">
             </form>` 
         }
     }
     db_c.append(sender);
 }
 
+function autoGetTab(){
+    get_tab();
+}
 
 function DB_control_panel(Tab)
 {
