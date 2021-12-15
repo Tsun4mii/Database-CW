@@ -92,7 +92,7 @@ begin
 			@price numeric(8,2),
 			@number int;
 	set @number = 1;
-	while @number < 10
+	while @number < 100000
 		begin
 			exec CreateBarcode @barcode OUTPUT;
 			exec CreateName 30, @prodname OUTPUT;

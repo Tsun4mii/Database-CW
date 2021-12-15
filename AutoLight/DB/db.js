@@ -37,7 +37,7 @@ class DB {
 
     selectAllUsers2(req, res)
     {
-        sql.connect(config).then(pool => {
+        connectionPool.then(pool => {
             return pool.request().query('EXEC selAllUsers',(err, data)=>{
                 res.send(data.recordset);
             })
@@ -82,6 +82,11 @@ class DB {
         return connectionPool.then(pool => 
             pool.query(`exec logAdmin ${login}`, (err, data)=>{
                 console.log(data);
+                if(data.recordset[0] === undefined)
+                {
+                    res.json({status:'ERROR'})
+                }
+                else{
                 if(bcrypt.compareSync(password, data.recordset[0].adminPassword))
                 {
                     req.session.login = login;
@@ -91,6 +96,7 @@ class DB {
                 else{
                     res.json({status:'ERROR'})
                 }
+            }
             }))
     }
     async login(req, res, password, login)
@@ -98,6 +104,11 @@ class DB {
         return connectionPool.then(pool => {
             pool.request().input('login', sql.NVarChar, login)
             .execute('selOneUser',(err, data)=>{
+                if(data.recordset[0] === undefined)
+                {
+                    res.json({status:'ERROR'})
+                }
+                else{
                 if(bcrypt.compareSync(password, data.recordset[0].password))
                 {
                     req.session.userId = data.recordset[0].id;
@@ -112,6 +123,7 @@ class DB {
                 {
                     res.json({status:'ERROR'})
                 }
+            }
             }); 
         }).catch(err => {
             console.log(err);
@@ -120,7 +132,7 @@ class DB {
     }
     selectAllUsers(req, res)
     {
-        sql.connect(config).then(pool => {
+        connectionPool.then(pool => {
             return pool.request().execute('selAllUsers',(err, data)=>{
                 res.send(data.recordset);
             });

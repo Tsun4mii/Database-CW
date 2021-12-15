@@ -152,7 +152,7 @@ app.post('/control/:fun/:exec', (req, res) => {
     DB.execWithParams(Exec, param, res).then(records => {
         res.json({status:"OK"});
     }).catch(err => {
-        res.sendFile(__dirname + '/views/errors/DMLError.html');
+        res.json({status:"ERROR"});
     });
 })
 
